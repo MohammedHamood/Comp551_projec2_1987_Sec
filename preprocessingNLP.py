@@ -9,7 +9,7 @@ this class contains the manual NLP funtions for cleaning and preprocssing steps
 
 from nltk import word_tokenize          
 from nltk.stem import WordNetLemmatizer,PorterStemmer
-from nltk.corpus import stopwords#nltk.download('stopwords')
+from nltk.corpus import stopwords
 
 import numpy as np
 import pandas as pd

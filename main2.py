@@ -6,13 +6,6 @@ Created on Fri Feb 28 14:33:01 2020
 """
 import pandas as pd
 import nltk
-nltk.download('stopwords')
-
-import nltk
-nltk.download('punkt')
-import nltk
-nltk.download('wordnet')
-
 import pipelines_FEngineering as BaseLine
 from sklearn.datasets import fetch_20newsgroups
 import preprocessingNLP as PNLP
@@ -30,12 +23,17 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.decomposition import PCA, NMF,TruncatedSVD
 from sklearn.feature_selection import SelectKBest, chi2
 
+#nltk.download('stopwords')
+#nltk.download('punkt')
+#nltk.download('wordnet')
+
+# Import 20 News Group Datasets
 train_data = fetch_20newsgroups(subset='train',shuffle=True, random_state=42,remove=['headers', 'footers', 'quotes'])
 train_data.data=PNLP.customNLP(train_data.data)
 test_data = fetch_20newsgroups(subset='test',shuffle=True, random_state=42,remove=['headers', 'footers', 'quotes'])
 test_data.data=PNLP.customNLP(test_data.data)
 
-
+#Remove empty rows
 validdata = []
 for row in train_data.data:
     validdata.append(len(row.split()))
@@ -46,6 +44,9 @@ df = pd.DataFrame({'data':train_data.data,'target':train_data.target})
 df=df.loc[ validIndex,: ]
 train_data.data=df['data'].tolist()
 train_data.target=df['target'].to_numpy()
+
+
+
 
 ## logistic regression train
 parameters = {
@@ -105,8 +106,8 @@ parameters = {
     'vect__ngram_range': ((1, 1), (1, 2),(1, 3)), 
     #'tfidf__use_idf': (True, False),
     #'tfidf__norm': ('l1', 'l2'),
-    'clf__criterion': ('gini','entropy'),
-    'clf__ccp_alpha': (0,.05,.1,.2,.3,.4),
+    #'clf__criterion': ('gini','entropy'),
+    #'clf__ccp_alpha': (0,.05,.1,.2,.3,.4),
     'clf__max_depth': (None,5,7,8,10,12,20,100),
     'clf__min_samples_split': (2,3,4,8,10,50,100),
     'clf__min_samples_leaf': (1,2,3,4,8,10,50,100),

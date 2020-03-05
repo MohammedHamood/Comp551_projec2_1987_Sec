@@ -43,7 +43,6 @@ test_data = fetch_20newsgroups(subset='test',shuffle=True, random_state=42,remov
 preprocessing
 """
 
-
 train_data.data=PNLP.customNLP(train_data.data)
 
 test_data.data=PNLP.customNLP(test_data.data)
@@ -74,7 +73,7 @@ LR_base_pridect=LR_base.predict(test_data.data)
 print(np.mean(LR_base_pridect == test_data.target))
 print(LR_base.best_estimator_)
 print(LR_base.best_score_)
-print(LR_base.score(LR_base_pridect,test_data.target))
+#print(LR_base.score(LR_base_pridect,test_data.target))
 
 
 
