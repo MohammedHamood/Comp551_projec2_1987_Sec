@@ -78,25 +78,34 @@ def Pipeline_FeatureEngineering(train_data,train_target,parameters=None,CV=10,
 
         def __init__(self):
             super(dcdistanceTransformer, self).__init__()
+            
 
         def fit(self, X, y, **fit_params):
-            print(X.shape)
+            self.alpha=20
             self.Classes=np.unique(y, return_index = False)
+            self.split=np.linspace(0, X.shape[1],self.alpha,endpoint = False,  dtype=int)
             self.vd=np.zeros((len(self.Classes),X.shape[1]))
+            self.vd2=np.zeros((len(self.Classes),X.shape[1]))
+            
+            #self.vd= np.empty((len(self.Classes),len(self.split),0))
+            #print(self.vd.shape)
             for i in self.Classes:
                 ind = np.where(y == i)[0]
-                self.vd[i,:]=X.tocsr()[ind,:].mean(axis = 0)
-               # X= sparse.csr_matrix(X)
-            return self
+                temp=np.zeros((1,X.shape[1]))
+                for feat in range(0,len(self.split)):
+                    ind1=self.split[feat]              
+                    ind2=self.split[feat]+self.split[1]
+#                    temp=X.tocsr()[ind,ind1:ind2].mean(axis = 0)
+#                    self.vd[int(i),ind1:ind2]=temp
+                    temp=X.tocsr()[ind,ind1:ind2].sum(axis = 0)
+                    self.vd2[int(i),ind1:ind2]=temp     
+            tfidf_transformer = TfidfTransformer()
+            self.vd2 = tfidf_transformer.fit_transform(self.vd2) 
 
-        def transform(self, X, **fit_params):
-            V=np.zeros((X.shape[0],len(self.Classes)))
-            for row in range(0,X.shape[0]):  
-                for i in self.Classes:
-                    V[row,i]=np.linalg.norm(X.tocsr()[row,:]-self.vd[i,:])#('Norm',Normalizer(copy=False)),
-            V= sparse.csr_matrix(V)
-            X=[]
-            return V    
+            self.vd2=self.vd2.todense()
+            
+                
+            return self  
         
   
   
