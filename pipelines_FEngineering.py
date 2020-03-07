@@ -26,7 +26,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.tree import DecisionTreeClassifier
 
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.preprocessing import Normalizer
 
 """
@@ -55,7 +55,7 @@ import preprocessingNLP as PNLP
 
 
 def Pipeline_FeatureEngineering(train_data,train_target,parameters=None,CV=10, 
-                                reductionMethod=PCA(),reductionType=1,model=LinearSVC()):
+                                reductionMethod=PCA(),reductionType=1,model=LinearSVC(), search="grid"):
     class DenseTransformer(TransformerMixin):
 
         def fit(self, X, y=None, **fit_params):
@@ -110,14 +110,23 @@ def Pipeline_FeatureEngineering(train_data,train_target,parameters=None,CV=10,
                              ('redu',reductionMethod),
                              ('Norm',Normalizer(copy=False)),('clf', model)])
     elif reductionType==3:
-        text_clf = Pipeline([('vect', CountVectorizer(max_features=200000,ngram_range=(1,3))),('tfidf', TfidfTransformer()),
+        text_clf = Pipeline([('vect', CountVectorizer(max_features=200000,ngram_range=(1,2))),('tfidf', TfidfTransformer(use_idf=False)),
                              ('clf', model)])    
     elif reductionType==0:
         text_clf = Pipeline([('vect', CountVectorizer(max_features=200000,ngram_range=(1,3))),('tfidf', TfidfTransformer()),
                              ('redu1',TruncatedSVD(n_components=300)),('Norm1',Normalizer(copy=False)),('redu',reductionMethod),
                              ('Norm2',Normalizer(copy=False)),('clf', model)])
-    gs_clf = GridSearchCV(text_clf, parameters, cv=CV, n_jobs=-1)
+    #global gs_clf
+
+    if search == 'random':
+        print("works")
+        gs_clf = RandomizedSearchCV(text_clf, parameters, cv=CV, n_jobs=-1, n_iter=5)
+    else:
+        gs_clf = GridSearchCV(text_clf, parameters, cv=CV, n_jobs=-1)
     gs_clf = gs_clf.fit(train_data, train_target)
+
+
+        
     return gs_clf
 
 
